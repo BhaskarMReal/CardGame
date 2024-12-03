@@ -1,0 +1,16 @@
+player 1 draws a 4 from deck 1
+player 1 discards a 5 to deck 2
+player 1 draws a 4 from deck 1
+player 1 discards a 5 to deck 2
+player 1 draws a 4 from deck 1
+player 1 discards a 5 to deck 2
+player 1 draws a 4 from deck 1
+player 1 discards a 5 to deck 2
+player 1 draws a 4 from deck 1
+player 1 discards a 9 to deck 2
+player 1 draws a 4 from deck 1
+player 1 discards a 5 to deck 2
+player 1 draws a 4 from deck 1
+player 1 discards a 5 to deck 2
+player 1 draws a 4 from deck 1
+player 1 discards a 5 to deck 2

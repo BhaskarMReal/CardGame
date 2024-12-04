@@ -14,20 +14,20 @@ public class PlayerTest {
 
     private List<Player> players = new ArrayList<>();
     
-
+    // initialises overarching players and gameControl
     @Before
     public void initialisePlayer() {
         ControlGame gameControl = new ControlGame();
         players.add(new Player(1, null, 0, 0, null, null, null, null, gameControl, 0, null));
         players.add(new Player(2, null, 0, 0, null, null, null, null, gameControl, 0, null));
     }
-
+    // checks the constructor is not null
     @Test
     public void checkPlayerConstructorNotNull() {
         Player player = players.get(0);
         assertNotNull(player);
     }
-
+    // checks set and get hand
     @Test
     public void checkSetAndGetHand() {
         ArrayList<Card> hand = new ArrayList<>();
@@ -44,7 +44,7 @@ public class PlayerTest {
     public void checkGetId() {
         assertEquals(1, players.get(0).getId());
     }
-
+    // checks set and get players
     @Test
     public void checkPlayersSetAndGet() {
         Player player1 = players.get(0);
@@ -83,7 +83,7 @@ public class PlayerTest {
         assertEquals(playerDeck, players.get(0).getDiscardDeck().getDeck());
 
     }
-
+    // checks left and right player are set correctly
     @Test
     public void checkLeftAndRightPlayer() {
         players.get(0).setLeftPlayer(players.get(1));
@@ -95,7 +95,7 @@ public class PlayerTest {
         assertEquals(player2, leftPlayer);
         assertEquals(player2, rightPlayer);
     }
-
+    // checks that preferredCardList keeps non-preferred cards and ignores preferred cards
     @Test
     public void checkPreferredCardList() {
         ArrayList<Card> hand = new ArrayList<>();
@@ -109,7 +109,7 @@ public class PlayerTest {
         testCards.add(9);
         assertEquals(testCards, prefCards);
     }
-
+    // check that gameControl works correctly if player has not won
     @Test
     public void checkPlayerLose() {
         ArrayList<Card> hand = new ArrayList<>();
@@ -123,7 +123,7 @@ public class PlayerTest {
         player1.checkWin(player1.getHand());
         assertFalse(player1.getControlGame().isGameWon());
     }
-
+    // check that it doesn't keep any cards and is returns an empty arraylist empty
     @Test 
     public void checkPreferredCardListFull() {
         ArrayList<Card> hand = new ArrayList<>();
@@ -134,7 +134,7 @@ public class PlayerTest {
         List<Integer> prefCards = players.get(0).preferredCardList(players.get(0).getId(), hand);
         assertTrue(prefCards.isEmpty());
     }
-
+    // checks if preferredCard function works and that it doesn't choose a preferred card
     @Test
     public void checkPreferredCard() {
         ArrayList<Card> hand = new ArrayList<>();
@@ -145,7 +145,7 @@ public class PlayerTest {
         List<Integer> prefCards = players.get(0).preferredCardList(players.get(0).getId(), hand);
         assertTrue(prefCards.contains(9) || prefCards.contains(5));
     }
-
+    // checks whether after drawing and discarding, hand remains at 4 cards
     @Test
     public void checkDrawAndDiscard() {
         ArrayList<Card> drawDeck1 = new ArrayList<>();
@@ -222,7 +222,7 @@ public class PlayerTest {
             file.delete();
         }
     }
-
+    // check if drawing works
     @Test
     public void checkOutputDrawToFile() {
         Player player3 = new Player(98, null, 0, 0, null, null, null, null, null, 0, null);
@@ -247,7 +247,7 @@ public class PlayerTest {
             file.delete();
         }
     }
-
+    // check that discarding works
     @Test
     public void checkOutputDiscardToFile() {
         Player player3 = new Player(97, null, 0, 0, null, null, null, null, null, 0, null);
@@ -272,7 +272,7 @@ public class PlayerTest {
             file.delete();
         }
     }
-
+    // check that winning player outputs to terminal
     @Test
     public void checkPlayerWinToTerminal() {
         try {
@@ -289,7 +289,7 @@ public class PlayerTest {
         }
 
     }
-
+    // check that player outputs correct message if they won
     @Test
     public void checkOutputFinalFileWinner() {
         Player player3 = new Player(95, null, 0, 0, null, null, null, null, null, 0, null);
@@ -329,7 +329,7 @@ public class PlayerTest {
             file.delete();
         }
     }
-
+    // check if player outputs correct quitting message
     @Test
     public void checkOutputFinalFileOther() {
         Player player3 = new Player(94, null, 0, 0, null, null, null, null, null, 0, null);
@@ -367,7 +367,7 @@ public class PlayerTest {
             file.delete();
         }
     }
-
+    // check if output to deck file succeeds
     @Test
     public void checkOutputDeckToFileSuccess() {
         Deck deck = new Deck(99, null);
@@ -400,7 +400,7 @@ public class PlayerTest {
             file.delete();
         }
     }
-
+    // check whether output to deck file fails if there aren't enough cards
     @Test
     public void checkOutputDeckToFileFail() {
         Deck deck = new Deck(90, null);

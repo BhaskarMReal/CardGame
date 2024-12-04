@@ -7,9 +7,10 @@ import java.util.Scanner;
 import static org.junit.Assert.*;
 
 public class InputTest {
-
+    // checks that playerNum input works for a valid integer
     @Test
     public void testPositiveIntegerInputSuccess() {
+        // simulate user input
         String simulatedInput = "1\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes());
         System.setIn(inputStream);
@@ -35,7 +36,7 @@ public class InputTest {
         }
         assertEquals(1, playerNum);
     }
-
+    // check if negative integer is rejected
     @Test
     public void testNegativeIntegerInputFailure() {
         String outputMessage = "";
@@ -56,7 +57,7 @@ public class InputTest {
         assertEquals("Please enter a number greater than 0", outputMessage);
     }
 
-
+    // check if pack file location exists
     @Test
     public void testValidPackFileExists() {
         Pack testValidPack = new Pack(null, null);
@@ -75,7 +76,7 @@ public class InputTest {
         assertEquals("Pack file exists", outputMessage);
 
     }
-
+    // check if file is valid
     @Test
     public void testValidFileContents() {
         Pack testValidPack = new Pack(null, null);
@@ -125,7 +126,7 @@ public class InputTest {
 
 
     }
-
+    // check if file has less than playerNum * 8 card values
     @Test
     public void testInvalidFileLessContents() {
         Pack testValidPack = new Pack(null, null);
@@ -153,7 +154,7 @@ public class InputTest {
 
         assertEquals("Pack file contains less than required number of cards", outputMessage);
     }
-
+    // check if there are too many cards in pack file
     @Test
     public void testInvalidFileMoreContents() {
         Pack testValidPack = new Pack(null, null);
@@ -182,7 +183,7 @@ public class InputTest {
         }
         assertEquals("Pack file contains more than required number of cards", outputMessage);
     }
-
+    // check if there are any invalid cards in pack file
     @Test
     public void testInvalidFileNegativeCardsInContent() {
         Pack testValidPack = new Pack(null, null);
@@ -222,7 +223,7 @@ public class InputTest {
         }
         assertEquals("Error: Invalid cards in pack file", outputMessage);
     }
-
+    // check if file is empty
     @Test
     public void testEmptyFileContents() {
         Pack testValidPack = new Pack(null, null);

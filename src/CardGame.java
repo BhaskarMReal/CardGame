@@ -9,49 +9,86 @@ public class CardGame {
        try {
             // get player input
             Scanner scan = new Scanner(System.in);
-            System.out.println("Please enter the number of players:");
-            
-            try {
-                // input validation, checks for an integer
-                while (!scan.hasNextInt()) {
+
+
+            int playerNum = -1;
+            while (playerNum <= 0) {
+                System.out.println("Please enter the number of players: ");
+                if (scan.hasNextInt()) {
+                    playerNum = scan.nextInt();
+
+                    if (playerNum <= 0) {
+                        System.out.println("Please enter a number greater than 0");
+                    }
+                } else {
                     System.out.println("Input is not a number");
-                    System.out.println("Please enter the number of players:");
                     scan.next();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
-            int playerNum = scan.nextInt();
             scan.nextLine();
-            System.out.println("Please enter location of pack to load (.txt):");
-            try {
-                // checks the format of input
-                while (!scan.hasNext()) {
-                    System.out.println("Input is not in format {playerNumber}.txt");
-                    System.out.println("Please enter the location of pack to load (.txt):");
-                    scan.next();
+            String testPackFile;
+            Pack testValidPack = new Pack(null, null);
+            ArrayList<Card> cards;
+            boolean isValid = false;
+            String packFile = null;
+
+            while (!isValid) {
+                System.out.println("Please enter location of pack to load (.txt):");
+                testPackFile = scan.nextLine();
+
+                File file = new File("logs/"+testPackFile);
+                if (!file.exists()) {
+                    System.out.println("Pack file does not exist");
+                    continue;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            String packFile = scan.nextLine();
-            try {
-                // checks if file exists
-                File file = new File("logs/"+packFile);
-                // if not..
-                while (!file.exists()) {
-                    System.out.println("Input is not in format {playerNumber in words}.txt");
-                    System.out.println("Please enter the location of pack to load (.txt):");
-                  packFile = scan.nextLine();
-                  file = new File("logs/"+packFile);
+
+                testValidPack.setName(testPackFile);
+                try {
+                    cards = testValidPack.packToList(testValidPack.getName());
+                } catch (Exception e) {
+                    System.out.println("Error loading pack");
+                    continue;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                testValidPack.setPackList(cards);
+
+                if (testValidPack.getPackList().isEmpty()) {
+                    System.out.println("Pack file is empty");
+                    continue;
+                }
+
+                if (testValidPack.getPackList().size() < (8 * playerNum)) {
+                    System.out.println("Pack file contains less than required number of cards");
+                    continue;
+                }
+
+                if (testValidPack.getPackList().size() > (8 * playerNum)) {
+                    System.out.println("Pack file contains more than required number of cards");
+                    continue;
+                }
+
+
+
+
+                if (testValidPack.getPackList().size() == (playerNum * 8)) {
+                    ArrayList<Integer> validCards = new ArrayList<>();
+                    for (Card card : testValidPack.getPackList()) {
+                        int cardValue = card.getValue();
+                        if (cardValue >= 1) {
+                            validCards.add(cardValue);
+                        }
+                    }
+                    if (validCards.size() == (8 * playerNum)) {
+                        packFile = testPackFile;
+                        isValid = true;
+                    } else {
+                        System.out.println("Error: Invalid cards in pack file");
+                    }
+
+                }
+
             }
-            // closes the scanner to stop leaking memory
-            scan.close();
-            
             // get contents of pack file into a list
             Pack gamePack = new Pack(packFile, null);
             // sets the game's card pack
@@ -59,30 +96,28 @@ public class CardGame {
            // initialises all overarching arraylists
             ArrayList<Player> playerList = new ArrayList<>();
             ArrayList<Deck> decks = new ArrayList<>();
-            ArrayList<Integer> playerIds = new ArrayList<>();
             ArrayList<ArrayList<Card>> tempDeck = new ArrayList<>();
             ArrayList<ArrayList<Card>> tempHand = new ArrayList<>();
             ControlGame control = new ControlGame();
             // creates new players, decks, ids and finally creates hand and deck lists (stores the 4 card hand and deck) 
             for (int i=0; i < playerNum; i++) {
                 playerList.add(new Player(i+1, null, 0, 0, null, null, null, null, control, 0, null));
-                playerIds.add(i+1);
                 decks.add(new Deck(i+1, null));
                 tempDeck.add(new ArrayList<>());
                 tempHand.add(new ArrayList<>());
             }
-            // assign cards to deck, using round-robin, from above half way point to end of pack
+            // assign cards to deck, using round-robin, from above halfway point to end of pack
             for (int i = (gamePack.getPackList().size()/2); i < gamePack.getPackList().size(); i++) {
                 int index = i % playerNum;
                 int value = gamePack.getPackList().get(i).getValue();
                 tempDeck.get(index).add(new Card(value));
             }
-            // sets the deck to a unique instance of Deck class in orde to set player's draw deck
+            // sets the deck to a unique instance of Deck class in order to set player's draw deck
             for (int i = 0; i < playerNum; i++) {
                 decks.get(i).setDeck(tempDeck.get(i));
                 playerList.get(i).setDrawDeck(decks.get(i));
             }
-            // hands out cards, round robin style. takes from first half of pack
+            // hands out cards, round-robin style. takes from first half of pack
             for (int i=0; i < gamePack.getPackList().size()/2; i++) {
                 int index = i % playerNum;
                 int value = gamePack.getPackList().get(i).getValue();
@@ -134,15 +169,10 @@ public class CardGame {
 
             }
 
-      
-            
-
-            ArrayList<Thread> threadList = new ArrayList<>();
-            // testing for outputs
+            // loop through player to create threads. runs card game
             for (Player player : playerList) {
                 Thread thread = new Thread(player);
                 player.outputPlayerInitial(player.getId(), player.getHand());
-                threadList.add(thread);
                 thread.start();
             }
 

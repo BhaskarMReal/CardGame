@@ -17,17 +17,19 @@ public class Player implements Runnable {
     private Deck drawDeck;
     private Deck discardDeck;
     private Player rightPlayer;
-    private Player leftPlayer; 
+    private Player leftPlayer;
+    // Thread safety mechanism
     private final  ReentrantLock handLock = new ReentrantLock();
     private final ReentrantLock drawDeckLock = new ReentrantLock();
     private final ReentrantLock discardDeckLock = new ReentrantLock();
     private final ReentrantLock idLock = new ReentrantLock();
     private final ReentrantLock playerLock = new ReentrantLock();
+    // universal game controller. controls game state
     private final ControlGame controlGame;
     private int winnerId;
     private ArrayList<Player> players;
     private final ReentrantLock playerListLock = new ReentrantLock();
-
+    // Player instance constructor
     public Player(int playerId, ArrayList<Card> playerHand, int drawId, int discardId, Deck playerDrawDeck, Deck playerDiscardDeck, Player previousPlayer, Player nextPlayer, ControlGame gameControl, int playerWon, ArrayList<Player> playersInGame) {
 
         this.id = playerId;
@@ -42,12 +44,13 @@ public class Player implements Runnable {
         this.winnerId = playerWon;
         this.players = playersInGame;
     }
-
+    // Thread run method overrideand game code
     @Override
     public void run() {
         try {
-         
+            // loop continues until the game is won
             while (!controlGame.isGameWon()) {
+                // checks if game has been won
                 checkWin(hand);                
                 drawAndDiscard(hand, drawDeck, discardDeck);
                 outputPlayerCurrent(id, hand);
@@ -56,7 +59,7 @@ public class Player implements Runnable {
                 
             }
 
-    
+            // runs once game has been won
             outputPlayerFinalFile(id, getWinnerId(), hand);
             outputDeckToFile(drawDeck);
             
@@ -66,7 +69,7 @@ public class Player implements Runnable {
             e.printStackTrace();
         }
     }
-
+    // method checks whether player hand equals arraylist of cards with value of id
     public void checkWin(ArrayList<Card> hand) {
         try {
             ArrayList<Card> winCondition = new ArrayList<>();
@@ -75,6 +78,7 @@ public class Player implements Runnable {
             winCondition.add(new Card(getId()));
             winCondition.add(new Card(getId()));
             if (winCondition.equals(hand)) {
+                // sets game to won
                 controlGame.setGameWon();
                 setControlGame(getControlGame());
             } 
@@ -84,15 +88,15 @@ public class Player implements Runnable {
         }
         
     }
-
+    // gets state of controlGame from instance
     public ControlGame getControlGame() {
         return controlGame;
     }
-
+    // sets instance's attribute to true
     public void setControlGame(ControlGame controlGame) {
         controlGame.setGameWon();
     }
-
+    // sets player list for player
     public void setPlayers(ArrayList<Player> players) {
         playerListLock.lock();
         try {
@@ -102,7 +106,7 @@ public class Player implements Runnable {
         }
         
     }
-
+    // gets player arraylist (list of player instances)
     public ArrayList<Player> getPlayers() {
         playerListLock.lock();
         try {
@@ -112,7 +116,7 @@ public class Player implements Runnable {
         }
         
     }
-
+    // sets winner id for player
     public void setWinnerId(int winnerId) {
         idLock.lock();
         try {   
@@ -124,7 +128,7 @@ public class Player implements Runnable {
     }
 
     
-
+    // gets winner id
     public int getWinnerId() {
         idLock.lock();
         try {
@@ -134,7 +138,7 @@ public class Player implements Runnable {
         }
     }
 
-    //Set the deck which cards to be discard to
+    //Set the deck which cards are discarded to
     public void setDiscardDeck(Deck discardDeck) {
         discardDeckLock.lock();
         try {
@@ -144,7 +148,7 @@ public class Player implements Runnable {
         }
     }
 
-    //Output which discard deck that have been set
+    //Output the discard deck
     public Deck getDiscardDeck() {
         discardDeckLock.lock();
         try {
@@ -234,7 +238,7 @@ public class Player implements Runnable {
         }
     }
 
-    //Get player on the left of current player that are running
+    //Get player on the left of current player that is running
     public Player getLeftPlayer() {
         playerLock.lock();
         try {
@@ -244,7 +248,7 @@ public class Player implements Runnable {
         }
     }
 
-    //Set player on the left of current player that are running
+    //Set player on the left of current player that is running
     public void setLeftPlayer(Player leftPlayer) {
         playerLock.lock();
         try {
@@ -254,7 +258,7 @@ public class Player implements Runnable {
         }
     }
 
-    //Get player on the right of current player that are running
+    //Get player on the right of current player that is running
     public Player getRightPlayer() {
         playerLock.lock();
         try {
@@ -264,7 +268,7 @@ public class Player implements Runnable {
         }
     }
 
-    //Set player on the right of current player that are running
+    //Set player on the right of current player that is running
     public void setRightPlayer(Player rightPlayer) {
         playerLock.lock();
         try {
@@ -297,6 +301,7 @@ public class Player implements Runnable {
     //Output into log current player's initial hand
     public synchronized void outputPlayerInitial(int playerId, ArrayList<Card> playerHand) {
         try {
+            // open file to write to
             BufferedWriter playerlog = new BufferedWriter(new FileWriter("logs/player"+id+"_output.txt", true));
             playerlog.write("player "+id+" initial hand: "+hand.get(0).getValue()+" "+hand.get(1).getValue()+" "+hand.get(2).getValue()+" "+hand.get(3).getValue());
             playerlog.newLine();
@@ -338,7 +343,7 @@ public class Player implements Runnable {
     //Output into log player that wins and cards in their hand
     public synchronized void outputPlayerFinalFile(int id, int winnerId, ArrayList<Card> hand) {
         try {
-            //Output into log final hand of the winned player
+            //Output into log final hand of the winning player
             if (id == winnerId) {
                 BufferedWriter playerlog = new BufferedWriter(new FileWriter("logs/player"+id+"_output.txt", true));
                 playerlog.write("player " +id+ " wins");
@@ -348,7 +353,7 @@ public class Player implements Runnable {
                 playerlog.write("player " +id+ " final hand: "+hand.get(0).getValue()+ " "+ hand.get(1).getValue()+ " " + hand.get(2).getValue() + " " + hand.get(3).getValue());
                 playerlog.newLine();
                 playerlog.close();
-            //Output into log final hand of player that lose
+            //Output into log final hand of player that has lost
             } else {
                 BufferedWriter playerlog = new BufferedWriter(new FileWriter("logs/player"+id+"_output.txt", true));
                 playerlog.write("player " +getWinnerId()+ " has informed player "+id+ " that player " + getWinnerId() + " has won");
@@ -366,12 +371,12 @@ public class Player implements Runnable {
     
     }
 
-    //Output into Terminal or screen which player win
+    //Output into Terminal or screen which player wins
     public synchronized void outputPlayerWinToTerminal(int winnerId) {
         System.out.println("Player "+winnerId+" wins");
     }
 
-    //
+    // Outputs final deck contents to logs
     public synchronized void outputDeckToFile(Deck deck) {
         try {
             BufferedWriter playerlog = new BufferedWriter(new FileWriter("logs/deck"+drawDeck.getId()+"_output.txt", true));
@@ -391,6 +396,7 @@ public class Player implements Runnable {
         int card3 = hand.get(2).getValue();
         int card4 = hand.get(3).getValue();
         List<Integer> discardList = new ArrayList<>();
+        // checks if each card is different from player id, if so adds to new arraylist
         if (card1 != id) {
             discardList.add(card1);
         }
@@ -410,7 +416,6 @@ public class Player implements Runnable {
     public int preferredCard(List<Integer> cardValues) {
         try {
             Random rand = new Random();
-           
             int preferredCardValue = cardValues.get(rand.nextInt(cardValues.size()));
             return preferredCardValue; 
         } catch (IllegalArgumentException e) {
@@ -446,6 +451,7 @@ public class Player implements Runnable {
                 rightDeck.getDeck().add(selectCard);
                 discardDeckLock.unlock();
                 rightPlayer.setDrawDeck(getDiscardDeck());
+                // Using Iterator to safely remove card from hand
                 Iterator<Card> iterateRemove = hand.iterator();
                 while (iterateRemove.hasNext()) {
                     Card card = iterateRemove.next();
@@ -461,6 +467,7 @@ public class Player implements Runnable {
             } else {
                 outputPlayerWinToTerminal(id);
                 setWinnerId(id);
+                // sets winner id for other players (excludes winning player)
                 for (int i=0; i < players.size(); i++) {
                     players.get(i).setWinnerId(id);
                 }

@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Deck {
     private int id;
     private ArrayList<Card> deck;
-
+    // constructor which contains the deck id and the deck cards
     public Deck(int deckId, ArrayList<Card> cards) {
         this.id = deckId;
         this.deck = cards;

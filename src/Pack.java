@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Pack {
     String name;
     ArrayList<Card> packList;
-    
+    // constructor for each Pack instance, with attributes: fileName (location of file) and list of cards within the file
     public Pack(String fileName, ArrayList<Card> packCards) {
         this.name = fileName;
         this.packList = packCards;
@@ -17,7 +17,7 @@ public class Pack {
        return name;
    }
 
-    //Set file name into variable
+    //Set file name into attribute
    public void setName(String name) {
        this.name = name;
    }
@@ -32,7 +32,7 @@ public class Pack {
        this.packList = packList;
    }
 
-    //Add cards from pack
+    //Get cards from pack and put into an arraylist
     public ArrayList<Card> packToList(String packFile) {
         ArrayList<Card> packCardList = new ArrayList<>();
         try {

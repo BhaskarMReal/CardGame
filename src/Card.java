@@ -12,7 +12,7 @@ public class Card {
         return value;
     }
 
-    //Set the value for each card
+    //Set the value for each card, checks for negatives
     public synchronized void setValue(int value) {
         if (value > 0) {
             this.value = value;

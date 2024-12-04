@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
                     ControlGameTest.class,
                     DeckTest.class,
                     PackTest.class, 
-                    PlayerTest.class})
+                    PlayerTest.class,
+                    InputTest.class})
 public class TestAll {
     }

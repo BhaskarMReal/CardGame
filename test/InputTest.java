@@ -78,6 +78,51 @@ public class InputTest {
 
     @Test
     public void testValidFileContents() {
+        Pack testValidPack = new Pack(null, null);
+        ArrayList<Card> cards = new ArrayList<>();
+
+        String packFile = null;
+
+
+        System.out.println("Please enter location of pack to load (.txt):");
+        String testPackFile = "one.txt";
+        int playerNum = 1;
+
+        File file = new File("logs/" + testPackFile);
+        if (!file.exists()) {
+            System.out.println("Pack file does not exist");
+        }
+
+        testValidPack.setName(testPackFile);
+        try {
+            cards = testValidPack.packToList(testValidPack.getName());
+        } catch (Exception e) {
+            System.out.println("Error loading pack");
+        }
+
+        testValidPack.setPackList(cards);
+
+        ArrayList<Integer> validCards = null;
+        if (testValidPack.getPackList().size() == (playerNum * 8)) {
+            validCards = new ArrayList<>();
+            for (Card card : testValidPack.getPackList()) {
+                int cardValue = card.getValue();
+                if (cardValue >= 1) {
+                    validCards.add(cardValue);
+                }
+            }
+            if (validCards.size() == (8 * playerNum)) {
+                packFile = testPackFile;
+                System.out.println("Valid Pack file loaded " + packFile);
+            } else {
+                System.out.println("Error: Invalid cards in pack file");
+            }
+
+        }
+        assert validCards != null;
+        assertEquals(8, validCards.size());
+        assertEquals(testPackFile, packFile);
+
 
     }
 
